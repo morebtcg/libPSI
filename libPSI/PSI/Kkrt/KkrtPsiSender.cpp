@@ -79,7 +79,7 @@ namespace osuCrypto
         }
 
         fu.get();
-        //std::cout << IoStream::lock << "send: recved PSI seed " << theirHashingSeeds << std::endl << IoStream::unlock;
+        //std::cout << IoStream::lock << "send: received PSI seed " << theirHashingSeeds << std::endl << IoStream::unlock;
 
         mHashingSeed = myHashSeeds ^ theirHashingSeeds;
 
@@ -123,12 +123,12 @@ namespace osuCrypto
         span<u64> perm)
     {
 
-        std::array<block, 8> hashs;
+        std::array<block, 8> hashes;
         AES hasher(hashingSeed);
 
         auto mNumHashFunctions = mItemToBinMap.stride();
-        auto mainSteps = items.size() / hashs.size();
-        auto remSteps = items.size() % hashs.size();
+        auto mainSteps = items.size() / hashes.size();
+        auto remSteps = items.size() % hashes.size();
         u64 itemIdx = 0;
 
         if (mNumHashFunctions == 3)
@@ -140,7 +140,7 @@ namespace osuCrypto
 
             for (u64 i = 0; i < mainSteps; ++i, itemIdx += 8)
             {
-                hasher.ecbEncBlocks(items.data() + itemIdx, 8, hashs.data());
+                hasher.ecbEncBlocks(items.data() + itemIdx, 8, hashes.data());
 
                 auto itemIdx0 = itemIdx + 0;
                 auto itemIdx1 = itemIdx + 1;
@@ -152,26 +152,26 @@ namespace osuCrypto
                 auto itemIdx7 = itemIdx + 7;
 
                 // compute the hash as  H(x) = AES(x) + x
-                hashs[0] = hashs[0] ^ items[itemIdx0];
-                hashs[1] = hashs[1] ^ items[itemIdx1];
-                hashs[2] = hashs[2] ^ items[itemIdx2];
-                hashs[3] = hashs[3] ^ items[itemIdx3];
-                hashs[4] = hashs[4] ^ items[itemIdx4];
-                hashs[5] = hashs[5] ^ items[itemIdx5];
-                hashs[6] = hashs[6] ^ items[itemIdx6];
-                hashs[7] = hashs[7] ^ items[itemIdx7];
+                hashes[0] = hashes[0] ^ items[itemIdx0];
+                hashes[1] = hashes[1] ^ items[itemIdx1];
+                hashes[2] = hashes[2] ^ items[itemIdx2];
+                hashes[3] = hashes[3] ^ items[itemIdx3];
+                hashes[4] = hashes[4] ^ items[itemIdx4];
+                hashes[5] = hashes[5] ^ items[itemIdx5];
+                hashes[6] = hashes[6] ^ items[itemIdx6];
+                hashes[7] = hashes[7] ^ items[itemIdx7];
 
                 // Get the first bin that each of the items maps to
-                auto bIdx00 = CuckooIndex<>::getHash(hashs[0], 0, numBins);
-                auto bIdx10 = CuckooIndex<>::getHash(hashs[1], 0, numBins);
-                auto bIdx20 = CuckooIndex<>::getHash(hashs[2], 0, numBins);
-                auto bIdx30 = CuckooIndex<>::getHash(hashs[3], 0, numBins);
-                auto bIdx40 = CuckooIndex<>::getHash(hashs[4], 0, numBins);
-                auto bIdx50 = CuckooIndex<>::getHash(hashs[5], 0, numBins);
-                auto bIdx60 = CuckooIndex<>::getHash(hashs[6], 0, numBins);
-                auto bIdx70 = CuckooIndex<>::getHash(hashs[7], 0, numBins);
+                auto bIdx00 = CuckooIndex<>::getHash(hashes[0], 0, numBins);
+                auto bIdx10 = CuckooIndex<>::getHash(hashes[1], 0, numBins);
+                auto bIdx20 = CuckooIndex<>::getHash(hashes[2], 0, numBins);
+                auto bIdx30 = CuckooIndex<>::getHash(hashes[3], 0, numBins);
+                auto bIdx40 = CuckooIndex<>::getHash(hashes[4], 0, numBins);
+                auto bIdx50 = CuckooIndex<>::getHash(hashes[5], 0, numBins);
+                auto bIdx60 = CuckooIndex<>::getHash(hashes[6], 0, numBins);
+                auto bIdx70 = CuckooIndex<>::getHash(hashes[7], 0, numBins);
 
-                // update the map with these bin indexs
+                // update the map with these bin indexes
                 mItemToBinMap(itemIdx0, 0) = bIdx00;
                 mItemToBinMap(itemIdx1, 0) = bIdx10;
                 mItemToBinMap(itemIdx2, 0) = bIdx20;
@@ -182,14 +182,14 @@ namespace osuCrypto
                 mItemToBinMap(itemIdx7, 0) = bIdx70;
 
                 // get the second bin index
-                auto bIdx01 = CuckooIndex<>::getHash(hashs[0], 1, numBins);
-                auto bIdx11 = CuckooIndex<>::getHash(hashs[1], 1, numBins);
-                auto bIdx21 = CuckooIndex<>::getHash(hashs[2], 1, numBins);
-                auto bIdx31 = CuckooIndex<>::getHash(hashs[3], 1, numBins);
-                auto bIdx41 = CuckooIndex<>::getHash(hashs[4], 1, numBins);
-                auto bIdx51 = CuckooIndex<>::getHash(hashs[5], 1, numBins);
-                auto bIdx61 = CuckooIndex<>::getHash(hashs[6], 1, numBins);
-                auto bIdx71 = CuckooIndex<>::getHash(hashs[7], 1, numBins);
+                auto bIdx01 = CuckooIndex<>::getHash(hashes[0], 1, numBins);
+                auto bIdx11 = CuckooIndex<>::getHash(hashes[1], 1, numBins);
+                auto bIdx21 = CuckooIndex<>::getHash(hashes[2], 1, numBins);
+                auto bIdx31 = CuckooIndex<>::getHash(hashes[3], 1, numBins);
+                auto bIdx41 = CuckooIndex<>::getHash(hashes[4], 1, numBins);
+                auto bIdx51 = CuckooIndex<>::getHash(hashes[5], 1, numBins);
+                auto bIdx61 = CuckooIndex<>::getHash(hashes[6], 1, numBins);
+                auto bIdx71 = CuckooIndex<>::getHash(hashes[7], 1, numBins);
 
                 // check if we get a collision with the first bin index
                 u8 c01 = 1 & (bIdx00 == bIdx01);
@@ -223,14 +223,14 @@ namespace osuCrypto
 
 
                 // repeat the process with the last hash function
-                auto bIdx02 = CuckooIndex<>::getHash(hashs[0], 2, numBins);
-                auto bIdx12 = CuckooIndex<>::getHash(hashs[1], 2, numBins);
-                auto bIdx22 = CuckooIndex<>::getHash(hashs[2], 2, numBins);
-                auto bIdx32 = CuckooIndex<>::getHash(hashs[3], 2, numBins);
-                auto bIdx42 = CuckooIndex<>::getHash(hashs[4], 2, numBins);
-                auto bIdx52 = CuckooIndex<>::getHash(hashs[5], 2, numBins);
-                auto bIdx62 = CuckooIndex<>::getHash(hashs[6], 2, numBins);
-                auto bIdx72 = CuckooIndex<>::getHash(hashs[7], 2, numBins);
+                auto bIdx02 = CuckooIndex<>::getHash(hashes[0], 2, numBins);
+                auto bIdx12 = CuckooIndex<>::getHash(hashes[1], 2, numBins);
+                auto bIdx22 = CuckooIndex<>::getHash(hashes[2], 2, numBins);
+                auto bIdx32 = CuckooIndex<>::getHash(hashes[3], 2, numBins);
+                auto bIdx42 = CuckooIndex<>::getHash(hashes[4], 2, numBins);
+                auto bIdx52 = CuckooIndex<>::getHash(hashes[5], 2, numBins);
+                auto bIdx62 = CuckooIndex<>::getHash(hashes[6], 2, numBins);
+                auto bIdx72 = CuckooIndex<>::getHash(hashes[7], 2, numBins);
 
 
                 u8 c02 = 1 & (bIdx00 == bIdx02 || bIdx01 == bIdx02);
@@ -263,15 +263,15 @@ namespace osuCrypto
             }
 
             // in case the input does not divide evenly by 8, handle the last few items.
-            hasher.ecbEncBlocks(items.data() + itemIdx, remSteps, hashs.data());
+            hasher.ecbEncBlocks(items.data() + itemIdx, remSteps, hashes.data());
             for (u64 i = 0; i < remSteps; ++i, ++itemIdx)
             {
-                hashs[i] = hashs[i] ^ items[itemIdx];
+                hashes[i] = hashes[i] ^ items[itemIdx];
 
                 std::vector<u64> bIdxs(mNumHashFunctions);
                 for (u64 h = 0; h < mNumHashFunctions; ++h)
                 {
-                    auto bIdx = CuckooIndex<>::getHash(hashs[i], (u8)h, numBins);
+                    auto bIdx = CuckooIndex<>::getHash(hashes[i], (u8)h, numBins);
                     bool collision = false;
 
                     bIdxs[h] = bIdx;
@@ -286,21 +286,21 @@ namespace osuCrypto
         }
         else
         {
-            // general proceedure for when numHashes != 3
+            // general procedure for when numHashes != 3
             std::vector<u64> bIdxs(mNumHashFunctions);
-            for (u64 i = 0; i < items.size(); i += hashs.size())
+            for (u64 i = 0; i < items.size(); i += hashes.size())
             {
-                auto min = std::min<u64>(items.size() - i, hashs.size());
+                auto min = std::min<u64>(items.size() - i, hashes.size());
 
-                hasher.ecbEncBlocks(items.data() + i, min, hashs.data());
+                hasher.ecbEncBlocks(items.data() + i, min, hashes.data());
 
                 for (u64 j = 0, itemIdx = i; j < min; ++j, ++itemIdx)
                 {
-                    hashs[j] = hashs[j] ^ items[itemIdx];
+                    hashes[j] = hashes[j] ^ items[itemIdx];
 
                     for (u64 h = 0; h < mNumHashFunctions; ++h)
                     {
-                        auto bIdx = CuckooIndex<>::getHash(hashs[j], (u8)h, numBins);
+                        auto bIdx = CuckooIndex<>::getHash(hashes[j], (u8)h, numBins);
                         bool collision = false;
 
                         bIdxs[h] = bIdx;
@@ -360,11 +360,11 @@ namespace osuCrypto
         std::atomic<u64> recvedIdx(0);
 
 
-        // spin off anothe thread that will schedule the corrections to be received.
+        // spin off another thread that will schedule the corrections to be received.
         // This thread does not actually do any work and could be removed somehow.
         auto thrd = std::thread([&]() {
 
-            // while there are more corrections for be recieved
+            // while there are more corrections for be received
             while (recvedIdx < numBins)
             {
                 // compute the  size of the current step and the end index
@@ -383,7 +383,7 @@ namespace osuCrypto
         setTimePoint("kkrt.S Online.hashing start");
 
         // hash the items to bins. Instead of inserting items into bins,
-        // we will just keep track of a map mapping input index to bin indexs
+        // we will just keep track of a map mapping input index to bin indexes
         //
         // e.g.   binIdxs[i] -> { h0(input[i]), h1(input[i]), h2(input[i]) }
         //
@@ -396,7 +396,7 @@ namespace osuCrypto
         // of the corrections have beed received. In the case that the current item
         // is mapped to a bin where we do not have the correction, we will simply
         // skip this item for now. Once all corrections have been received, we
-        // will make a second pass over the inputs and enocde them all.
+        // will make a second pass over the inputs and encode them all.
 
         // the current input index
         u64 i = 0;
@@ -404,7 +404,7 @@ namespace osuCrypto
         // the index of the corrections that have been received in the other thread.
         u64 r = 0;
 
-        // while not all the corrections have been recieved, try to encode any that we can
+        // while not all the corrections have been received, try to encode any that we can
         while (r != numBins)
         {
             // process things in steps
@@ -419,7 +419,7 @@ namespace osuCrypto
                 {
                     auto& bIdx = binIdxs(inputIdx, h);
 
-                    // if the bin index is less than r, then we have recieved
+                    // if the bin index is less than r, then we have received
                     // the correction and can encode it
                     if (bIdx < r)
                     {
@@ -445,8 +445,8 @@ namespace osuCrypto
         setTimePoint("kkrt.S Online.linear start");
         auto encoding = myMaskBuff.data();
 
-        // OK, all corrections have been recieved. It is now safe to start sending
-        // masks to the reciever. We will send them in permuted order
+        // OK, all corrections have been received. It is now safe to start sending
+        // masks to the receiver. We will send them in permuted order
         //     mPermute[0],
         //     mPermute[1],
         //        ...
@@ -454,7 +454,7 @@ namespace osuCrypto
         //
         // Also note that we can start sending them before all have been
         // encoded. This will allow us to start communicating data back to the
-        // reciever almost right after all the corrections have been recieved.
+        // receiver almost right after all the corrections have been received.
         for (u64 i = 0; i < inputs.size();)
         {
             auto start = i;
