@@ -471,7 +471,7 @@ namespace osuCrypto
 
                     auto bIdx = binIdxs(inputIdx, h);
 
-                    // see if we have alreadt encoded this items
+                    // see if we have already encoded this items
                     if (bIdx != u64(-1))
                     {
                         mOtSender->encode(bIdx, &inputs[inputIdx], encoding, myMaskBuff.stride());
