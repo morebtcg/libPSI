@@ -162,6 +162,7 @@ namespace osuCrypto
                 hashes[7] = hashes[7] ^ items[itemIdx7];
 
                 // Get the first bin that each of the items maps to
+<<<<<<< HEAD
                 auto bIdx00 = CuckooIndex<>::getHash(hashes[0], 0, numBins);
                 auto bIdx10 = CuckooIndex<>::getHash(hashes[1], 0, numBins);
                 auto bIdx20 = CuckooIndex<>::getHash(hashes[2], 0, numBins);
@@ -170,6 +171,16 @@ namespace osuCrypto
                 auto bIdx50 = CuckooIndex<>::getHash(hashes[5], 0, numBins);
                 auto bIdx60 = CuckooIndex<>::getHash(hashes[6], 0, numBins);
                 auto bIdx70 = CuckooIndex<>::getHash(hashes[7], 0, numBins);
+=======
+                auto bIdx00 = CuckooIndex<>::getHash(hashs[0], 0, numBins);
+                auto bIdx10 = CuckooIndex<>::getHash(hashs[1], 0, numBins);
+                auto bIdx20 = CuckooIndex<>::getHash(hashs[2], 0, numBins);
+                auto bIdx30 = CuckooIndex<>::getHash(hashs[3], 0, numBins);
+                auto bIdx40 = CuckooIndex<>::getHash(hashs[4], 0, numBins);
+                auto bIdx50 = CuckooIndex<>::getHash(hashs[5], 0, numBins);
+                auto bIdx60 = CuckooIndex<>::getHash(hashs[6], 0, numBins);
+                auto bIdx70 = CuckooIndex<>::getHash(hashs[7], 0, numBins);
+>>>>>>> upstream/master
 
                 // update the map with these bin indexes
                 mItemToBinMap(itemIdx0, 0) = bIdx00;
